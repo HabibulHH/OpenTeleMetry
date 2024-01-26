@@ -6,39 +6,56 @@ const tracerProvider = configureOpenTelemetry();
 
 // Create your Express app
 const app = express();
+const { context, trace } = require('@opentelemetry/api');
 
-// Your routes and middleware go here
-// Middleware for /signup route to create a span
 app.use('/signup', (req, res, next) => {
   const tracer = tracerProvider.getTracer('express-tracer');
   const span = tracer.startSpan('signup-endpoint');
-  //console.log('Tracer Configuration:', tracerProvider.getConfig());
 
   // Add custom attributes or log additional information if needed
   span.setAttribute('user', 'user made');
 
   // Pass the span to the request object for use in the route handler
-  req.span = span;
-
-  // Log resource attributes
-  console.log('Resource Attributes:', span.resource.attributes);
-
-  // Continue with the request handling
-  next();
+  context.with(trace.setSpan(context.active(), span), () => {
+    next();
+  });
 });
+const Validate = (req, parentSpan) => {
+  const tracer = tracerProvider.getTracer('express-tracer');
+  const childSpan = tracer.startSpan('validation', { parent: parentSpan });
 
-// Signup route
+  // Your validation logic here
+  // End the child span
+  childSpan.end();
+};
+
+
+const SaveToDB = (req, parentSpan) => {
+  const tracer = tracerProvider.getTracer('express-tracer');
+  const childSpan = tracer.startSpan('Saved TOo DB', { parent: parentSpan });
+
+  // Your validation logic here
+  // End the child span
+  childSpan.end();
+};
+
 app.post('/signup', (req, res) => {
-  // Access the span from the request object
-  const span = req.span;
+  // Access the parent span from the request object
+  const parentSpan = trace.getSpan(context.active());
 
   // Your signup logic here
 
-  // End the span
-  span.end();
+  // Call the validation function with the parent span
+  Validate(req, parentSpan);
+  SaveToDB(req, parentSpan);
+  // End the parent span
+  parentSpan.end();
 
   res.send('Signup successful!');
 });
+
+
+
 
 // Start the server
 const PORT = 3000;
