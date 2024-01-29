@@ -4,7 +4,7 @@ const express = require('express');
 const configureOpenTelemetry = require('./opentelemetry');
 const { context, trace } = require('@opentelemetry/api');
 
-const tracerProvider = configureOpenTelemetry();
+const tracerProvider = configureOpenTelemetry('payment-service');
 const app = express();
 
 

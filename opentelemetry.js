@@ -6,11 +6,11 @@ const { BatchSpanProcessor } = require('@opentelemetry/tracing');
 const { Resource } = require('@opentelemetry/resources');
 const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions');
 
-function configureOpenTelemetry() {
+function configureOpenTelemetry(serviceName) {
   // Create a tracer provider and register the Express instrumentation
   const provider = new NodeTracerProvider({
     resource: new Resource({
-      [SemanticResourceAttributes.SERVICE_NAME]: 'order-service',
+      [SemanticResourceAttributes.SERVICE_NAME]: serviceName,
       // Add other resource attributes as needed
     }),
   });
@@ -18,7 +18,7 @@ function configureOpenTelemetry() {
 
   // Configure and register Jaeger exporter
   const exporter = new JaegerExporter({
-    serviceName: 'order-service',
+    serviceName: serviceName,
     agentHost: 'localhost', // Change this to your Jaeger host
     agentPort: 16686, // Change this to your Jaeger port
   });

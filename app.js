@@ -2,7 +2,9 @@ const express = require('express');
 const configureOpenTelemetry = require('./opentelemetry');
 const { SendNotification } = require('./notification');
 // Configure OpenTelemetry
-const tracerProvider = configureOpenTelemetry();
+//const tracerProvider = configureOpenTelemetry();
+const tracerProvider = configureOpenTelemetry('order-service');
+
 
 // Create your Express app
 const app = express();
