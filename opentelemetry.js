@@ -5,7 +5,7 @@ const { JaegerExporter } = require('@opentelemetry/exporter-jaeger');
 const { BatchSpanProcessor } = require('@opentelemetry/tracing');
 const { Resource } = require('@opentelemetry/resources');
 const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions');
-
+const { RedisInstrumentation } = require('@opentelemetry/instrumentation-redis');
 function configureOpenTelemetry(serviceName) {
   // Create a tracer provider and register the Express instrumentation
   const provider = new NodeTracerProvider({
@@ -30,7 +30,8 @@ function configureOpenTelemetry(serviceName) {
   // Register the Express instrumentation
   registerInstrumentations({
     tracerProvider: provider,
-    instrumentations: [new ExpressInstrumentation()],
+    instrumentations: [new ExpressInstrumentation(),new RedisInstrumentation(),],
+    
   });
 
   return provider;

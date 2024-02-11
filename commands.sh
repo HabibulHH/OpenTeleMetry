@@ -10,3 +10,8 @@ docker run -d --name jaeger \
   -p 14269:14269 \
   -p 9411:9411 \
   jaegertracing/all-in-one:1.29
+
+  docker run --name open-tel-redis -d redis:4.0.14
+
+
+http://localhost:16686/trace/3ac627ec48c7956928433ab4320688a5

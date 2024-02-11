@@ -1,6 +1,8 @@
 const express = require('express');
+const { setKeyValue, getValueByKey } = require('./Redis/RedisSetup');
+
 const configureOpenTelemetry = require('./opentelemetry');
-const { SendNotification } = require('./notification');
+//const { SendNotification } = require('./notification');
 // Configure OpenTelemetry
 //const tracerProvider = configureOpenTelemetry();
 const tracerProvider = configureOpenTelemetry('order-service');
@@ -22,40 +24,60 @@ app.use('/signup', (req, res, next) => {
     next();
   });
 });
-const Validate = (req, parentSpan) => {
+const Validate = async (req, parentSpan) => {
   const tracer = tracerProvider.getTracer('express-tracer');
   const childSpan = tracer.startSpan('validation', { parent: parentSpan });
 
+  // Introduce a delay in the validation process
+  await new Promise(resolve => setTimeout(resolve, 3000)); // 5000 ms delay
+
   // Your validation logic here
+
   // End the child span
   childSpan.end();
 };
 
 
-const SaveToDB = (req, parentSpan) => {
+
+const SaveToDB = async (req, parentSpan) => {
   const tracer = tracerProvider.getTracer('express-tracer');
-  const childSpan = tracer.startSpan('Saved TOo DB', { parent: parentSpan });
+  const childSpan = tracer.startSpan('save to db', { parent: parentSpan });
+
+  // Introduce a delay in the validation process
+  await new Promise(resolve => setTimeout(resolve, 3500)); // 5000 ms delay
 
   // Your validation logic here
+
   // End the child span
   childSpan.end();
 };
 
-app.post('/signup', (req, res) => {
+app.post('/signup', async (req, res) => {
   // Access the parent span from the request object
   const parentSpan = trace.getSpan(context.active());
 
   Validate(req, parentSpan);
+
+  const userInfo = { name: "John Doe", email: "john.doe@example.com" };
+
+  // Save user info to Redis
+  try{
+
+    await setKeyValue('user_info', JSON.stringify(userInfo), parentSpan);
+  }catch(e){
+    console.log(e);
+  }
+
   // Set a color tag for the validation span
-// Add an event to the span with a color tag for validation
- // Add a tag to the span for validation
- parentSpan.setAttribute('validation.tag', 'validation');
+  // Add an event to the span with a color tag for validation
+  // Add a tag to the `span for validation
+  parentSpan.setAttribute('validation.tag', 'validation');
   SaveToDB(req, parentSpan);
-  SendNotification(parentSpan);
+  //SendNotification(parentSpan);
   // End the parent span
   parentSpan.end();
-
-  res.send('Signup successful!');
+  const traceId = parentSpan.spanContext().traceId;
+  res.send(traceId,200);
 });
  
 
