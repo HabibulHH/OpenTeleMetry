@@ -12,12 +12,15 @@ docker run -d --name jaeger \
   jaegertracing/all-in-one:1.29
 
   docker run --name open-tel-redis -d redis:4.0.14
+  
+docker run \
+  -p 9090:9090 \
+  -v $(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml \
+  prom/prometheus
 
-  docker run \
-    -p 9090:9090 \
-    -v /path/to/prometheus.yml:/etc/prometheus/prometheus.yml \
-    prom/prometheus
 
 
+
+brew services start grafana
 
 http://localhost:16686/trace/3ac627ec48c7956928433ab4320688a5

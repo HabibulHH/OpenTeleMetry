@@ -2,7 +2,7 @@ const express = require('express');
 const { setKeyValue, getValueByKey } = require('./Redis/RedisWithMeter');
 
 const configureOpenTelemetry = require('./opentelemetry');
-//const { SendNotification } = require('./notification');
+const { SendNotification } = require('./notification');
 // Configure OpenTelemetry
 //const tracerProvider = configureOpenTelemetry();
 const tracerProvider = configureOpenTelemetry('order-service');
@@ -73,7 +73,7 @@ app.post('/signup', async (req, res) => {
   // Add a tag to the `span for validation
   parentSpan.setAttribute('validation.tag', 'validation');
   SaveToDB(req, parentSpan);
-  //SendNotification(parentSpan);
+  SendNotification(parentSpan);
   // End the parent span
   parentSpan.end();
   const traceId = parentSpan.spanContext().traceId;
@@ -84,7 +84,7 @@ app.post('/signup', async (req, res) => {
 
 
 // Start the server
-const PORT = 3000;
+const PORT = 4040;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

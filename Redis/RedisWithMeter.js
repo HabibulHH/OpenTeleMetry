@@ -40,32 +40,33 @@ const client = redis.createClient({
 });
 client.connect();
 
-// Function to set a key-value pair in Redis with tracing and metrics
+
+
+
 async function setKeyValue(key, value) {
   try {
     await client.set(key, value);
     console.log(`Key set: ${key}`);
-    // Use the correct counter
-    redisKeySetCounter.add(1); // Increment the key set counter
+    // Increment the key set counter with a label for success
+    redisKeySetCounter.add(1, { operation: "set", status: "success" });
   } catch (error) {
     console.error(`Error setting key ${key}:`, error);
-    // Use the correct error counter
-    redisKeySetErrorCounter.add(1); // Increment the key set error counter
+    // Increment the key set error counter with a label for the error
+    redisKeySetErrorCounter.add(1, { operation: "set", status: "error" });
   }
 }
 
-// Function to get a value by key from Redis with tracing and metrics
 async function getValueByKey(key) {
   try {
     const value = await client.get(key);
     console.log(`Value for ${key}:`, value);
-    // Use the correct counter
-    redisValueRetrievalCounter.add(1); // Increment the value retrieval counter
+    // Increment the value retrieval counter with a label for success
+    redisValueRetrievalCounter.add(1, { operation: "get", status: "success" });
     return value;
   } catch (error) {
     console.error(`Error getting value for key ${key}:`, error);
-    // Use the correct error counter
-    redisValueRetrievalErrorCounter.add(1); // Increment the value retrieval error counter
+    // Increment the value retrieval error counter with a label for the error
+    redisValueRetrievalErrorCounter.add(1, { operation: "get", status: "error" });
   }
 }
 
