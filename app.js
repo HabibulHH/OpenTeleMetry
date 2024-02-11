@@ -1,5 +1,5 @@
 const express = require('express');
-const { setKeyValue, getValueByKey } = require('./Redis/RedisSetup');
+const { setKeyValue, getValueByKey } = require('./Redis/RedisWithMeter');
 
 const configureOpenTelemetry = require('./opentelemetry');
 //const { SendNotification } = require('./notification');
